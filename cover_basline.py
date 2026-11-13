@@ -62,10 +62,10 @@ def cover_basline(O, C, S, R):
     return backtrack(0) # begin from the  first sprinkler
 
 # Testing with given example
-O = [2, 6, 11]
-C = [4, 8, 14]
-S = [3, 7, 12]
-R = [2, 2, 1]
+O = [2, 8]
+C = [4, 6]
+S = [2, 4, 6, 8]
+R = [0, 2, 2, 0]
 
 solution, count = cover_basline(O, C, S, R)
 

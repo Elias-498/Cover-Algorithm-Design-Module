@@ -65,10 +65,10 @@ def cover_faster(O, C, S, R):
 
     return backtrack(0, None, len(C) + 1)
 
-O = [2, 6, 11]
-C = [4, 8, 14]
-S = [3, 7, 12]
-R = [2, 2, 1]
+O = [2, 8]
+C = [4, 6]
+S = [2, 4, 6, 8]
+R = [0, 2, 2, 0]
 
 solution, count = cover_faster(O, C, S, R)
 
