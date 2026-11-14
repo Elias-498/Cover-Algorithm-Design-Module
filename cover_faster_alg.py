@@ -1,7 +1,7 @@
 # Aim:  Stop exploring combinations that cannot produce a better result
 
 import time
-
+import tracemalloc
 # Check whether a position receives water
 def is_watered(pos, selected, S, R):
 
@@ -68,9 +68,10 @@ def cover_faster(O, C, S, R):
     return backtrack(0, None, len(C) + 1)
 
 def run_experiments(alg):
-    # Experiment 1: Using Every sprinkler is needed to water all orange trees
+    # Experiment 1: Increase the number of sprinklers when every sprinkler is necessary (scalability and memory)
     print("Experiment 1")
-    for s in [4, 6, 8, 10, 12]:
+    largest = 0  # largest number of sprinklers handled within limit
+    for s in [4, 8, 12, 16, 18, 20, 22, 24]:
         O = []
         C = [3, 13]
         S = []
@@ -81,18 +82,37 @@ def run_experiments(alg):
             S.append(i * 10)
             R.append(0)
 
+        # measuring execution time
         total_time = 0
-        for i in range(5):
+        for i in range(5):  # 5 times to get an avg
             start = time.perf_counter()
             solution, count = alg(O, C, S, R)
             end = time.perf_counter()
             total_time += end - start
 
+        # average execution time in ms
         average = (total_time / 5) * 1000
 
-        print("Sprinklers:", s, "| Cacti watered:", count, "| Average time:", round(average, 3), "ms")
+        # Measuring memory space
+        tracemalloc.start()
+        solution, count = alg(O, C, S, R)
+        current, peak = tracemalloc.get_traced_memory()
+        tracemalloc.stop()
 
-    # Experiment 2: Adding unnecessary sprinklers
+        memory = peak / 1024  # KIb
+
+        print("Sprinklers:", s, "| Average time:", round(average, 3), "ms", "| Memory:", round(memory, 3), "Kib")
+
+        # Time limit for test = 1s/1000ms
+        # Memory limit = 64Mib
+        # Stop testing for larger inputs if either limits exceed
+        if average > 1000 or memory > 64 * 1024:
+            break
+
+        largest = s
+    print("Largest tested within limits:", largest)
+
+    # Experiment 2: Adding unnecessary sprinklers (Performance for early stops)
     print("\nExperiment 2")
     for s in [4, 6, 8, 10, 12, 14]:
         O = [2, 8]
@@ -118,7 +138,7 @@ def run_experiments(alg):
         average = (total_time / 5) * 1000
         print("Sprinklers:", s, "| Cacti watered:", count, "| Average time:", round(average, 3), "ms")
 
-        # Experiment 3: increasing number of cacti
+    # Experiment 3: increasing number of cacti (Comparing baseline and faster execution times)
     print("\nExperiment 3")
 
     for c in [2, 5, 10, 15, 20]:
