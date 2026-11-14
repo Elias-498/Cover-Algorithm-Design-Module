@@ -1,5 +1,7 @@
 # Aim:  Stop exploring combinations that cannot produce a better result
 
+import time
+
 # Check whether a position receives water
 def is_watered(pos, selected, S, R):
 
@@ -65,41 +67,79 @@ def cover_faster(O, C, S, R):
 
     return backtrack(0, None, len(C) + 1)
 
-O = [2, 8]
-C = [4, 6]
-S = [2, 4, 6, 8]
-R = [0, 2, 2, 0]
+def run_experiments(alg):
+    # Experiment 1: Using Every sprinkler is needed to water all orange trees
+    print("Experiment 1")
+    for s in [4, 6, 8, 10, 12]:
+        O = []
+        C = [3, 13]
+        S = []
+        R = []
 
-solution, count = cover_faster(O, C, S, R)
+        for i in range(s):
+            O.append(i * 10)
+            S.append(i * 10)
+            R.append(0)
+
+        total_time = 0
+        for i in range(5):
+            start = time.perf_counter()
+            solution, count = alg(O, C, S, R)
+            end = time.perf_counter()
+            total_time += end - start
+
+        average = (total_time / 5) * 1000
+
+        print("Sprinklers:", s, "| Cacti watered:", count, "| Average time:", round(average, 3), "ms")
+
+    # Experiment 2: Adding unnecessary sprinklers
+    print("\nExperiment 2")
+    for s in [4, 6, 8, 10, 12, 14]:
+        O = [2, 8]
+        C = [4, 6]
+        S = [2, 4, 6, 8]
+        R = [0, 2, 2, 0]
+
+        # adding more sprinklers
+        for i in range(4, s):
+            if i % 2 == 0:
+                S.append(4)
+            else:
+                S.append(6)
+            R.append(2)
+
+        total_time = 0
+        for i in range(5):
+            start = time.perf_counter()
+            solution, count = alg(O, C, S, R)
+            end = time.perf_counter()
+            total_time += end - start
+
+        average = (total_time / 5) * 1000
+        print("Sprinklers:", s, "| Cacti watered:", count, "| Average time:", round(average, 3), "ms")
+
+        # Experiment 3: increasing number of cacti
+    print("\nExperiment 3")
+
+    for c in [2, 5, 10, 15, 20]:
+        O = [2, 8]
+        C = [4, 6]
+        S = [2, 4, 6, 8]
+        R = [0, 2, 2, 0]
+
+        # adding more cacti
+        for i in range(2, c):
+            C.append(20 + i)
+
+        total_time = 0
+        for i in range(5):
+            start = time.perf_counter()
+            solution, count = alg(O, C, S, R)
+            end = time.perf_counter()
+            total_time += end - start
+
+        average = (total_time / 5) * 1000
+        print("Cacti:", c, "| Cacti watered:", count, "| Average time:", round(average, 3), "ms")
 
 
-if solution is None:
-    print("No valid sprinkler selection.")
-else:
-
-    positions = []
-    watered_oranges = []
-    watered_cacti = []
-    dry_cacti = []
-
-    # selected sprinkler's positions
-    for i in range(len(solution)):
-        positions.append(S[solution[i]])
-
-    # which orange trees are watered
-    for i in range(len(O)):
-        if is_watered(O[i], solution, S, R):
-            watered_oranges.append(O[i])
-
-    # which cacti are watered
-    for i in range(len(C)):
-        if is_watered(C[i], solution, S, R):
-            watered_cacti.append(C[i])
-        else:
-            dry_cacti.append(C[i])
-
-    print("The selected sprinklers are those at positions", positions)
-
-    print("Number of orange trees watered=",len(watered_oranges), ".Orange trees watered positions", watered_oranges)
-    print("Number of cacti watered =", count, ".Cacti watered positions", watered_cacti )
-    print("Cacti not watered:", dry_cacti)
+run_experiments(cover_faster)
