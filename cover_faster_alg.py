@@ -110,7 +110,7 @@ def run_experiments(alg):
             break
 
         largest = s
-    print("Largest tested within limits:", largest)
+        print("Largest tested within limits:", largest)
 
     # Experiment 2: Adding unnecessary sprinklers (Performance for early stops)
     print("\nExperiment 2")
